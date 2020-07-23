@@ -77,7 +77,7 @@ class COCO:
         """
         # load dataset
         self.dataset,self.anns,self.cats,self.imgs = dict(),dict(),dict(),dict()
-        self.imgToAnns, self.catToImgs = defaultdict(list), defaultdict(list)
+        self.imgToAnns, self.catToImgs ,self.filenameToId = defaultdict(list),defaultdict(list), dict()
         if not annotation_file == None:
             print('loading annotations into memory...')
             tic = time.time()
@@ -91,7 +91,7 @@ class COCO:
         # create index
         print('creating index...')
         anns, cats, imgs = {}, {}, {}
-        imgToAnns,catToImgs = defaultdict(list),defaultdict(list)
+        imgToAnns,catToImgs,filenameToId = defaultdict(list),defaultdict(list),dict()
         if 'annotations' in self.dataset:
             for ann in self.dataset['annotations']:
                 imgToAnns[ann['image_id']].append(ann)
@@ -99,6 +99,8 @@ class COCO:
 
         if 'images' in self.dataset:
             for img in self.dataset['images']:
+                filenameToId[img['file_name']] = img['id']
+                filenameToId[os.path.splitext(img['file_name'])[0]] = img['id']
                 imgs[img['id']] = img
 
         if 'categories' in self.dataset:
@@ -115,6 +117,7 @@ class COCO:
         self.anns = anns
         self.imgToAnns = imgToAnns
         self.catToImgs = catToImgs
+        self.filenameToId = filenameToId
         self.imgs = imgs
         self.cats = cats
 
